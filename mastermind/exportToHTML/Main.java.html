@@ -1,0 +1,272 @@
+<html>
+<head>
+<title>Main.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Main.java</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">event</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.*;</span>
+
+<span class="s0">public class </span><span class="s1">Main </span><span class="s0">extends </span><span class="s1">JFrame </span><span class="s2">{</span>
+    <span class="s3">// List of possible colors in the game</span>
+    <span class="s0">private final </span><span class="s1">String</span><span class="s2">[] </span><span class="s1">colors </span><span class="s2">= {</span><span class="s4">&quot;Red&quot;</span><span class="s2">, </span><span class="s4">&quot;Green&quot;</span><span class="s2">, </span><span class="s4">&quot;Blue&quot;</span><span class="s2">, </span><span class="s4">&quot;Yellow&quot;</span><span class="s2">, </span><span class="s4">&quot;Orange&quot;</span><span class="s2">, </span><span class="s4">&quot;Purple&quot;</span><span class="s2">};</span>
+    <span class="s0">private final </span><span class="s1">String</span><span class="s2">[] </span><span class="s1">secretCode </span><span class="s2">= </span><span class="s0">new </span><span class="s1">String</span><span class="s2">[</span><span class="s5">4</span><span class="s2">];</span>
+    <span class="s0">private int </span><span class="s1">attemptsLeft </span><span class="s2">= </span><span class="s5">10</span><span class="s2">;</span>
+
+    <span class="s3">// GUI components</span>
+    <span class="s0">private </span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">JComboBox</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt;&gt; </span><span class="s1">guessComboBoxes </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;&gt;();</span>
+    <span class="s0">private </span><span class="s1">JButton submitButton</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">JTextArea feedbackArea</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">JPanel feedbackPanel</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">JPanel colorDisplayPanel</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">JLabel attemptsLabel</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">JButton resetButton</span><span class="s2">;</span>
+
+    <span class="s0">public </span><span class="s1">Main</span><span class="s2">() {</span>
+        <span class="s3">// Set up JFrame properties</span>
+        <span class="s1">setTitle</span><span class="s2">(</span><span class="s4">&quot;Mastermind Game&quot;</span><span class="s2">);</span>
+        <span class="s1">setSize</span><span class="s2">(</span><span class="s5">600</span><span class="s2">, </span><span class="s5">700</span><span class="s2">);</span>
+        <span class="s1">setDefaultCloseOperation</span><span class="s2">(</span><span class="s1">JFrame</span><span class="s2">.</span><span class="s1">EXIT_ON_CLOSE</span><span class="s2">);</span>
+        <span class="s1">setLayout</span><span class="s2">(</span><span class="s0">new </span><span class="s1">FlowLayout</span><span class="s2">(</span><span class="s1">FlowLayout</span><span class="s2">.</span><span class="s1">CENTER</span><span class="s2">, </span><span class="s5">20</span><span class="s2">, </span><span class="s5">20</span><span class="s2">));</span>
+        <span class="s1">setLocationRelativeTo</span><span class="s2">(</span><span class="s0">null</span><span class="s2">);</span>
+        <span class="s1">getContentPane</span><span class="s2">().</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Color</span><span class="s2">(</span><span class="s5">240</span><span class="s2">, </span><span class="s5">240</span><span class="s2">, </span><span class="s5">240</span><span class="s2">));</span>
+
+        <span class="s3">// Generate secret code</span>
+        <span class="s1">generateSecretCode</span><span class="s2">();</span>
+
+        <span class="s3">// Create guess input fields (JComboBox)</span>
+        <span class="s1">JPanel guessPanel </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JPanel</span><span class="s2">();</span>
+        <span class="s1">guessPanel</span><span class="s2">.</span><span class="s1">setLayout</span><span class="s2">(</span><span class="s0">new </span><span class="s1">FlowLayout</span><span class="s2">(</span><span class="s1">FlowLayout</span><span class="s2">.</span><span class="s1">CENTER</span><span class="s2">, </span><span class="s5">20</span><span class="s2">, </span><span class="s5">20</span><span class="s2">));</span>
+        <span class="s1">guessPanel</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Color</span><span class="s2">(</span><span class="s5">240</span><span class="s2">, </span><span class="s5">240</span><span class="s2">, </span><span class="s5">240</span><span class="s2">));</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s5">4</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s1">JComboBox</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">comboBox </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JComboBox</span><span class="s2">&lt;&gt;(</span><span class="s1">colors</span><span class="s2">);</span>
+            <span class="s1">comboBox</span><span class="s2">.</span><span class="s1">setPreferredSize</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Dimension</span><span class="s2">(</span><span class="s5">100</span><span class="s2">, </span><span class="s5">40</span><span class="s2">));</span>
+            <span class="s1">guessComboBoxes</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">comboBox</span><span class="s2">);</span>
+            <span class="s1">guessPanel</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">comboBox</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s1">add</span><span class="s2">(</span><span class="s1">guessPanel</span><span class="s2">);</span>
+
+        <span class="s3">// Submit button</span>
+        <span class="s1">submitButton </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JButton</span><span class="s2">(</span><span class="s4">&quot;Submit Guess&quot;</span><span class="s2">);</span>
+        <span class="s1">submitButton</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Color</span><span class="s2">(</span><span class="s5">50</span><span class="s2">, </span><span class="s5">150</span><span class="s2">, </span><span class="s5">255</span><span class="s2">));</span>
+        <span class="s1">submitButton</span><span class="s2">.</span><span class="s1">setForeground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">WHITE</span><span class="s2">);</span>
+        <span class="s1">submitButton</span><span class="s2">.</span><span class="s1">setFocusPainted</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+        <span class="s1">submitButton</span><span class="s2">.</span><span class="s1">setFont</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Font</span><span class="s2">(</span><span class="s4">&quot;Arial&quot;</span><span class="s2">, </span><span class="s1">Font</span><span class="s2">.</span><span class="s1">BOLD</span><span class="s2">, </span><span class="s5">16</span><span class="s2">));</span>
+        <span class="s1">submitButton</span><span class="s2">.</span><span class="s1">addActionListener</span><span class="s2">(</span><span class="s0">new </span><span class="s1">SubmitButtonListener</span><span class="s2">());</span>
+        <span class="s1">submitButton</span><span class="s2">.</span><span class="s1">setPreferredSize</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Dimension</span><span class="s2">(</span><span class="s5">150</span><span class="s2">, </span><span class="s5">40</span><span class="s2">));</span>
+        <span class="s1">add</span><span class="s2">(</span><span class="s1">submitButton</span><span class="s2">);</span>
+
+        <span class="s3">// Feedback area</span>
+        <span class="s1">feedbackArea </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextArea</span><span class="s2">();</span>
+        <span class="s1">feedbackArea</span><span class="s2">.</span><span class="s1">setEditable</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+        <span class="s1">feedbackArea</span><span class="s2">.</span><span class="s1">setFont</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Font</span><span class="s2">(</span><span class="s4">&quot;Arial&quot;</span><span class="s2">, </span><span class="s1">Font</span><span class="s2">.</span><span class="s1">PLAIN</span><span class="s2">, </span><span class="s5">14</span><span class="s2">));</span>
+        <span class="s1">feedbackArea</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">LIGHT_GRAY</span><span class="s2">);</span>
+        <span class="s1">feedbackArea</span><span class="s2">.</span><span class="s1">setLineWrap</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+        <span class="s1">feedbackArea</span><span class="s2">.</span><span class="s1">setWrapStyleWord</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+        <span class="s1">feedbackArea</span><span class="s2">.</span><span class="s1">setPreferredSize</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Dimension</span><span class="s2">(</span><span class="s5">500</span><span class="s2">, </span><span class="s5">100</span><span class="s2">));</span>
+        <span class="s1">add</span><span class="s2">(</span><span class="s0">new </span><span class="s1">JScrollPane</span><span class="s2">(</span><span class="s1">feedbackArea</span><span class="s2">));</span>
+
+        <span class="s3">// Color display panel for showing selected colors and feedback</span>
+        <span class="s1">colorDisplayPanel </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JPanel</span><span class="s2">();</span>
+        <span class="s1">colorDisplayPanel</span><span class="s2">.</span><span class="s1">setLayout</span><span class="s2">(</span><span class="s0">new </span><span class="s1">FlowLayout</span><span class="s2">(</span><span class="s1">FlowLayout</span><span class="s2">.</span><span class="s1">CENTER</span><span class="s2">, </span><span class="s5">20</span><span class="s2">, </span><span class="s5">20</span><span class="s2">));</span>
+        <span class="s1">colorDisplayPanel</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Color</span><span class="s2">(</span><span class="s5">240</span><span class="s2">, </span><span class="s5">240</span><span class="s2">, </span><span class="s5">240</span><span class="s2">));</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s5">4</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s1">JLabel label </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">();</span>
+            <span class="s1">label</span><span class="s2">.</span><span class="s1">setPreferredSize</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Dimension</span><span class="s2">(</span><span class="s5">50</span><span class="s2">, </span><span class="s5">50</span><span class="s2">));</span>
+            <span class="s1">label</span><span class="s2">.</span><span class="s1">setHorizontalAlignment</span><span class="s2">(</span><span class="s1">SwingConstants</span><span class="s2">.</span><span class="s1">CENTER</span><span class="s2">);</span>
+            <span class="s1">label</span><span class="s2">.</span><span class="s1">setFont</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Font</span><span class="s2">(</span><span class="s4">&quot;Arial&quot;</span><span class="s2">, </span><span class="s1">Font</span><span class="s2">.</span><span class="s1">BOLD</span><span class="s2">, </span><span class="s5">30</span><span class="s2">));</span>
+            <span class="s1">label</span><span class="s2">.</span><span class="s1">setOpaque</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+            <span class="s1">label</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">GRAY</span><span class="s2">);  </span><span class="s3">// Default color (gray)</span>
+            <span class="s1">colorDisplayPanel</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">label</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s1">add</span><span class="s2">(</span><span class="s1">colorDisplayPanel</span><span class="s2">);</span>
+
+        <span class="s3">// Attempts label</span>
+        <span class="s1">attemptsLabel </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Attempts Left: &quot; </span><span class="s2">+ </span><span class="s1">attemptsLeft</span><span class="s2">);</span>
+        <span class="s1">attemptsLabel</span><span class="s2">.</span><span class="s1">setFont</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Font</span><span class="s2">(</span><span class="s4">&quot;Arial&quot;</span><span class="s2">, </span><span class="s1">Font</span><span class="s2">.</span><span class="s1">BOLD</span><span class="s2">, </span><span class="s5">16</span><span class="s2">));</span>
+        <span class="s1">attemptsLabel</span><span class="s2">.</span><span class="s1">setForeground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">RED</span><span class="s2">);</span>
+        <span class="s1">add</span><span class="s2">(</span><span class="s1">attemptsLabel</span><span class="s2">);</span>
+
+        <span class="s3">// Reset button</span>
+        <span class="s1">resetButton </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JButton</span><span class="s2">(</span><span class="s4">&quot;Reset Game&quot;</span><span class="s2">);</span>
+        <span class="s1">resetButton</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Color</span><span class="s2">(</span><span class="s5">255</span><span class="s2">, </span><span class="s5">100</span><span class="s2">, </span><span class="s5">100</span><span class="s2">));</span>
+        <span class="s1">resetButton</span><span class="s2">.</span><span class="s1">setForeground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">WHITE</span><span class="s2">);</span>
+        <span class="s1">resetButton</span><span class="s2">.</span><span class="s1">setFocusPainted</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+        <span class="s1">resetButton</span><span class="s2">.</span><span class="s1">setFont</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Font</span><span class="s2">(</span><span class="s4">&quot;Arial&quot;</span><span class="s2">, </span><span class="s1">Font</span><span class="s2">.</span><span class="s1">BOLD</span><span class="s2">, </span><span class="s5">16</span><span class="s2">));</span>
+        <span class="s1">resetButton</span><span class="s2">.</span><span class="s1">addActionListener</span><span class="s2">(</span><span class="s0">new </span><span class="s1">ResetButtonListener</span><span class="s2">());</span>
+        <span class="s1">resetButton</span><span class="s2">.</span><span class="s1">setPreferredSize</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Dimension</span><span class="s2">(</span><span class="s5">150</span><span class="s2">, </span><span class="s5">40</span><span class="s2">));</span>
+        <span class="s1">add</span><span class="s2">(</span><span class="s1">resetButton</span><span class="s2">);</span>
+
+        <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// Method to generate a random secret code</span>
+    <span class="s0">private void </span><span class="s1">generateSecretCode</span><span class="s2">() {</span>
+        <span class="s1">Random rand </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Random</span><span class="s2">();</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s5">4</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s1">secretCode</span><span class="s2">[</span><span class="s1">i</span><span class="s2">] = </span><span class="s1">colors</span><span class="s2">[</span><span class="s1">rand</span><span class="s2">.</span><span class="s1">nextInt</span><span class="s2">(</span><span class="s1">colors</span><span class="s2">.</span><span class="s1">length</span><span class="s2">)];</span>
+        <span class="s2">}</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Secret Code: &quot; </span><span class="s2">+ </span><span class="s1">Arrays</span><span class="s2">.</span><span class="s1">toString</span><span class="s2">(</span><span class="s1">secretCode</span><span class="s2">)); </span><span class="s3">// Debugging line</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// Method to evaluate the guess</span>
+    <span class="s0">private </span><span class="s1">String evaluateGuess</span><span class="s2">() {</span>
+        <span class="s1">StringBuilder feedback </span><span class="s2">= </span><span class="s0">new </span><span class="s1">StringBuilder</span><span class="s2">();</span>
+        <span class="s1">String</span><span class="s2">[] </span><span class="s1">guess </span><span class="s2">= </span><span class="s0">new </span><span class="s1">String</span><span class="s2">[</span><span class="s5">4</span><span class="s2">];</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s5">4</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s1">guess</span><span class="s2">[</span><span class="s1">i</span><span class="s2">] = (</span><span class="s1">String</span><span class="s2">) </span><span class="s1">guessComboBoxes</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">i</span><span class="s2">).</span><span class="s1">getSelectedItem</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s0">int </span><span class="s1">correctPosition </span><span class="s2">= </span><span class="s5">0</span><span class="s2">, </span><span class="s1">correctColor </span><span class="s2">= </span><span class="s5">0</span><span class="s2">;</span>
+        <span class="s0">boolean</span><span class="s2">[] </span><span class="s1">secretUsed </span><span class="s2">= </span><span class="s0">new boolean</span><span class="s2">[</span><span class="s5">4</span><span class="s2">];  </span><span class="s3">// Track used positions in the secret code</span>
+        <span class="s0">boolean</span><span class="s2">[] </span><span class="s1">guessUsed </span><span class="s2">= </span><span class="s0">new boolean</span><span class="s2">[</span><span class="s5">4</span><span class="s2">];   </span><span class="s3">// Track used positions in the guess</span>
+
+        <span class="s3">// Check for correct positions</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s5">4</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">secretCode</span><span class="s2">[</span><span class="s1">i</span><span class="s2">].</span><span class="s1">equals</span><span class="s2">(</span><span class="s1">guess</span><span class="s2">[</span><span class="s1">i</span><span class="s2">])) {</span>
+                <span class="s1">correctPosition</span><span class="s2">++;</span>
+                <span class="s1">secretUsed</span><span class="s2">[</span><span class="s1">i</span><span class="s2">] = </span><span class="s0">true</span><span class="s2">;  </span><span class="s3">// Mark secret code position as used</span>
+                <span class="s1">guessUsed</span><span class="s2">[</span><span class="s1">i</span><span class="s2">] = </span><span class="s0">true</span><span class="s2">;   </span><span class="s3">// Mark guess position as used</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s3">// Check for correct color but wrong position</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s5">4</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s0">if </span><span class="s2">(!</span><span class="s1">guessUsed</span><span class="s2">[</span><span class="s1">i</span><span class="s2">]) {  </span><span class="s3">// Skip already used positions in the guess</span>
+                <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">j </span><span class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">j </span><span class="s2">&lt; </span><span class="s5">4</span><span class="s2">; </span><span class="s1">j</span><span class="s2">++) {</span>
+                    <span class="s0">if </span><span class="s2">(!</span><span class="s1">secretUsed</span><span class="s2">[</span><span class="s1">j</span><span class="s2">] &amp;&amp; </span><span class="s1">secretCode</span><span class="s2">[</span><span class="s1">j</span><span class="s2">].</span><span class="s1">equals</span><span class="s2">(</span><span class="s1">guess</span><span class="s2">[</span><span class="s1">i</span><span class="s2">])) {</span>
+                        <span class="s1">correctColor</span><span class="s2">++;</span>
+                        <span class="s1">secretUsed</span><span class="s2">[</span><span class="s1">j</span><span class="s2">] = </span><span class="s0">true</span><span class="s2">;  </span><span class="s3">// Mark secret code position as used</span>
+                        <span class="s0">break</span><span class="s2">;</span>
+                    <span class="s2">}</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s3">// Append feedback</span>
+        <span class="s1">feedback</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;Correct positions: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">correctPosition</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">);</span>
+        <span class="s1">feedback</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;Correct colors but wrong positions: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">correctColor</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">);</span>
+
+        <span class="s3">// Check for win</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">correctPosition </span><span class="s2">== </span><span class="s5">4</span><span class="s2">) {</span>
+            <span class="s1">feedback</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;Congratulations! You guessed the correct code!&quot;</span><span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">else if </span><span class="s2">(</span><span class="s1">attemptsLeft </span><span class="s2">== </span><span class="s5">0</span><span class="s2">) {</span>
+            <span class="s1">feedback</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;Game Over! You've used all your attempts.</span><span class="s0">\n</span><span class="s4">The secret code was: &quot;</span><span class="s2">);</span>
+            <span class="s1">feedback</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s1">Arrays</span><span class="s2">.</span><span class="s1">toString</span><span class="s2">(</span><span class="s1">secretCode</span><span class="s2">));</span>
+            <span class="s1">revealSecretCode</span><span class="s2">();  </span><span class="s3">// Reveal the secret code after all attempts are used</span>
+        <span class="s2">}</span>
+
+        <span class="s3">// Update the visual feedback (color squares)</span>
+        <span class="s1">updateFeedbackPanel</span><span class="s2">(</span><span class="s1">correctPosition</span><span class="s2">, </span><span class="s1">correctColor</span><span class="s2">);</span>
+
+        <span class="s0">return </span><span class="s1">feedback</span><span class="s2">.</span><span class="s1">toString</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// Method to update the feedback panel with color squares</span>
+    <span class="s0">private void </span><span class="s1">updateFeedbackPanel</span><span class="s2">(</span><span class="s0">int </span><span class="s1">correctPosition</span><span class="s2">, </span><span class="s0">int </span><span class="s1">correctColor</span><span class="s2">) {</span>
+        <span class="s3">// Clear previous feedback (set all to gray)</span>
+        <span class="s1">Component</span><span class="s2">[] </span><span class="s1">labels </span><span class="s2">= </span><span class="s1">colorDisplayPanel</span><span class="s2">.</span><span class="s1">getComponents</span><span class="s2">();</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">Component label </span><span class="s2">: </span><span class="s1">labels</span><span class="s2">) {</span>
+            <span class="s1">JLabel jLabel </span><span class="s2">= (</span><span class="s1">JLabel</span><span class="s2">) </span><span class="s1">label</span><span class="s2">;</span>
+            <span class="s1">jLabel</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">GRAY</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s3">// Update feedback squares based on correct positions and colors</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s5">4</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s1">JLabel jLabel </span><span class="s2">= (</span><span class="s1">JLabel</span><span class="s2">) </span><span class="s1">labels</span><span class="s2">[</span><span class="s1">i</span><span class="s2">];</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">correctPosition </span><span class="s2">&gt; </span><span class="s5">0</span><span class="s2">) {</span>
+                <span class="s1">jLabel</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">BLACK</span><span class="s2">); </span><span class="s3">// Correct color in the correct position</span>
+                <span class="s1">correctPosition</span><span class="s2">--;</span>
+            <span class="s2">} </span><span class="s0">else if </span><span class="s2">(</span><span class="s1">correctColor </span><span class="s2">&gt; </span><span class="s5">0</span><span class="s2">) {</span>
+                <span class="s1">jLabel</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">WHITE</span><span class="s2">); </span><span class="s3">// Correct color in the wrong position</span>
+                <span class="s1">correctColor</span><span class="s2">--;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// Method to reveal the secret code after the game ends</span>
+    <span class="s0">private void </span><span class="s1">revealSecretCode</span><span class="s2">() {</span>
+        <span class="s1">Component</span><span class="s2">[] </span><span class="s1">labels </span><span class="s2">= </span><span class="s1">colorDisplayPanel</span><span class="s2">.</span><span class="s1">getComponents</span><span class="s2">();</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s5">4</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s1">JLabel jLabel </span><span class="s2">= (</span><span class="s1">JLabel</span><span class="s2">) </span><span class="s1">labels</span><span class="s2">[</span><span class="s1">i</span><span class="s2">];</span>
+            <span class="s1">String color </span><span class="s2">= </span><span class="s1">secretCode</span><span class="s2">[</span><span class="s1">i</span><span class="s2">];</span>
+            <span class="s0">switch </span><span class="s2">(</span><span class="s1">color</span><span class="s2">) {</span>
+                <span class="s0">case </span><span class="s4">&quot;Red&quot;</span><span class="s2">:</span>
+                    <span class="s1">jLabel</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">RED</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;Green&quot;</span><span class="s2">:</span>
+                    <span class="s1">jLabel</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">GREEN</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;Blue&quot;</span><span class="s2">:</span>
+                    <span class="s1">jLabel</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">BLUE</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;Yellow&quot;</span><span class="s2">:</span>
+                    <span class="s1">jLabel</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">YELLOW</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;Orange&quot;</span><span class="s2">:</span>
+                    <span class="s1">jLabel</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">ORANGE</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;Purple&quot;</span><span class="s2">:</span>
+                    <span class="s1">jLabel</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">MAGENTA</span><span class="s2">);</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// Event listener for submit button</span>
+    <span class="s0">private class </span><span class="s1">SubmitButtonListener </span><span class="s0">implements </span><span class="s1">ActionListener </span><span class="s2">{</span>
+        <span class="s0">public void </span><span class="s1">actionPerformed</span><span class="s2">(</span><span class="s1">ActionEvent e</span><span class="s2">) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">attemptsLeft </span><span class="s2">&gt; </span><span class="s5">0</span><span class="s2">) {</span>
+                <span class="s1">String feedback </span><span class="s2">= </span><span class="s1">evaluateGuess</span><span class="s2">();</span>
+                <span class="s1">feedbackArea</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s1">feedback</span><span class="s2">);</span>
+                <span class="s1">attemptsLeft</span><span class="s2">--;</span>
+                <span class="s1">attemptsLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;Attempts Left: &quot; </span><span class="s2">+ </span><span class="s1">attemptsLeft</span><span class="s2">);</span>
+            <span class="s2">}</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">attemptsLeft </span><span class="s2">== </span><span class="s5">0</span><span class="s2">) {</span>
+                <span class="s1">submitButton</span><span class="s2">.</span><span class="s1">setEnabled</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">// Event listener for reset button</span>
+    <span class="s0">private class </span><span class="s1">ResetButtonListener </span><span class="s0">implements </span><span class="s1">ActionListener </span><span class="s2">{</span>
+        <span class="s0">public void </span><span class="s1">actionPerformed</span><span class="s2">(</span><span class="s1">ActionEvent e</span><span class="s2">) {</span>
+            <span class="s1">attemptsLeft </span><span class="s2">= </span><span class="s5">10</span><span class="s2">;</span>
+            <span class="s1">generateSecretCode</span><span class="s2">();</span>
+            <span class="s1">guessComboBoxes</span><span class="s2">.</span><span class="s1">forEach</span><span class="s2">(</span><span class="s1">comboBox -&gt; comboBox</span><span class="s2">.</span><span class="s1">setSelectedIndex</span><span class="s2">(</span><span class="s5">0</span><span class="s2">));</span>
+            <span class="s1">feedbackArea</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;&quot;</span><span class="s2">);</span>
+            <span class="s1">submitButton</span><span class="s2">.</span><span class="s1">setEnabled</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+            <span class="s1">attemptsLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;Attempts Left: &quot; </span><span class="s2">+ </span><span class="s1">attemptsLeft</span><span class="s2">);</span>
+
+            <span class="s3">// Reset the color display</span>
+            <span class="s1">Component</span><span class="s2">[] </span><span class="s1">labels </span><span class="s2">= </span><span class="s1">colorDisplayPanel</span><span class="s2">.</span><span class="s1">getComponents</span><span class="s2">();</span>
+            <span class="s0">for </span><span class="s2">(</span><span class="s1">Component label </span><span class="s2">: </span><span class="s1">labels</span><span class="s2">) {</span>
+                <span class="s1">JLabel jLabel </span><span class="s2">= (</span><span class="s1">JLabel</span><span class="s2">) </span><span class="s1">label</span><span class="s2">;</span>
+                <span class="s1">jLabel</span><span class="s2">.</span><span class="s1">setBackground</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">GRAY</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static void </span><span class="s1">main</span><span class="s2">(</span><span class="s1">String</span><span class="s2">[] </span><span class="s1">args</span><span class="s2">) {</span>
+        <span class="s0">new </span><span class="s1">Main</span><span class="s2">();</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+</pre>
+</body>
+</html>
